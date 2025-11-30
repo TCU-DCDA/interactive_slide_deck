@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>End-of-Semester Sentiment & Skills</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css" id="theme">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>Coding in the Humanities</h1>
+                <h3>End-of-Semester Wrap-Up</h3>
+                <p>Let's see how we're feeling and what we've learned!</p>
+            </section>
+
+            <!-- Slide 2: Sentiment Analysis Input -->
+            <section>
+                <h2>How are you feeling?</h2>
+                <p>Go to <strong>/student.html</strong> to submit your thoughts!</p>
+                <div id="sentiment-legend" style="margin-top: 50px;">
+                    <span style="color: #4caf50;">Positive</span> | 
+                    <span style="color: #ffeb3b;">Neutral</span> | 
+                    <span style="color: #f44336;">Negative</span>
+                </div>
+            </section>
+
+            <!-- Slide 3: Sentiment Visualization (Bubbles) -->
+            <section id="bubble-slide">
+                <h2>Class Sentiment</h2>
+                <div style="display: flex; justify-content: space-between; font-size: 0.6em; color: #aaa; margin-bottom: 10px;">
+                    <span>Negative</span>
+                    <span>Neutral</span>
+                    <span>Positive</span>
+                </div>
+                <div id="bubble-container">
+                    <!-- Bubbles will appear here -->
+                </div>
+            </section>
+
+            <!-- Slide 4: Python & NLP Quiz - Question 1 -->
+            <section>
+                <h2>Skills Check: Q1</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <p>1. Which library is commonly used for NLP in Python?</p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">a) Pandas</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">b) NLTK</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">c) Flask</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Python & NLP Quiz - Question 2 -->
+            <section>
+                <h2>Skills Check: Q2</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <p>2. What does 'tokenization' do?</p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">a) Encrypts data</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">b) Splits text into words</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">c) Connects to API</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Python & NLP Quiz - Question 3 -->
+            <section>
+                <h2>Skills Check: Q3</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <p>3. What is the output of <code>print(10 % 3)</code>?</p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">a) 1</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">b) 3</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">c) 10</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: Python & NLP Quiz - Question 4 -->
+            <section>
+                <h2>Skills Check: Q4</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <p>4. Which data structure is immutable?</p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">a) List</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">b) Dictionary</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">c) Tuple</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Python & NLP Quiz - Question 5 -->
+            <section>
+                <h2>Skills Check: Q5</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <p>5. What keyword defines a function?</p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">a) func</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">b) def</li>
+                            <li style="padding: 10px; background: #333; margin: 5px; border-radius: 5px;">c) function</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Quiz Results -->
+            <section id="results-slide">
+                <h2>Quiz Results</h2>
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Correct Answers</td>
+                            <td id="correct-count">0</td>
+                        </tr>
+                        <tr>
+                            <td>Incorrect Answers</td>
+                            <td id="incorrect-count">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button onclick="resetQuiz()">Reset Quiz</button>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <!-- Custom Script -->
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Student View - Interactive Deck</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 { margin-top: 0; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #42affa;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover { background-color: #2196f3; }
+        .quiz-options button {
+            margin-bottom: 10px;
+            background-color: #eee;
+            color: #333;
+            text-align: left;
+        }
+        .quiz-options button.selected {
+            background-color: #4caf50;
+            color: white;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Student Response</h1>
+
+    <!-- Sentiment Section -->
+    <div class="card">
+        <h2>How are you feeling?</h2>
+        <p>Share a thought about the class:</p>
+        <input type="text" id="studentThoughtInput" placeholder="I learned so much..." autocomplete="off">
+        <button id="studentAddThoughtBtn">Send Thought</button>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="card" id="quiz-card">
+        <h2>Quick Quiz</h2>
+        <p style="font-style: italic; color: #666; margin-bottom: 20px;">Look at the main screen for the question, then select your answer below.</p>
+        
+        <div id="q1">
+            <p><strong>Question 1 of 5</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(1, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(1, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(1, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q2" class="hidden">
+            <p><strong>Question 2 of 5</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(2, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(2, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(2, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q3" class="hidden">
+            <p><strong>Question 3 of 5</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(3, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(3, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(3, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q4" class="hidden">
+            <p><strong>Question 4 of 5</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(4, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(4, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(4, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q5" class="hidden">
+            <p><strong>Question 5 of 5</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(5, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(5, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(5, 'c', this)">Option C</button>
+            </div>
+        </div>
+        
+        <div id="quiz-done" class="hidden">
+            <h3>Thanks for your answers!</h3>
+            <p>Look at the main screen for results.</p>
+            <button onclick="location.reload()" style="margin-top: 20px; background-color: #777;">Take Quiz Again</button>
+        </div>
+    </div>
+
+    <script src="js/student.js"></script>
+</body>
+</html>
