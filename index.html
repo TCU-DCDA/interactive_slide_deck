@@ -20,7 +20,12 @@
             <section>
                 <h1>Coding in the Humanities</h1>
                 <h3>End-of-Semester Wrap-Up</h3>
-                <p>Let's see how we're feeling and what we've learned!</p>
+                <div id="connection-info" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <p style="font-size: 0.6em; margin-bottom: 10px;">Join the session:</p>
+                    <div id="qrcode" style="display: inline-block; background: white; padding: 10px;"></div>
+                    <p id="join-link" style="font-size: 0.5em; margin-top: 10px; color: #42affa;"></p>
+                    <p id="status-indicator" style="font-size: 0.4em; color: #aaa;">Status: Connecting to network...</p>
+                </div>
             </section>
 
             <!-- Slide 2: Sentiment Analysis Input -->
@@ -151,6 +156,10 @@
 
     <!-- Reveal.js Script -->
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <!-- PeerJS (Networking) -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- QRCode.js (For easy phone connection) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Custom Script -->
     <script src="js/script.js"></script>
 </body>

@@ -41,6 +41,30 @@ cd interactive_slide_deck
 # Open index.html in your browser
 ```
 
+## Deployment
+
+This project is a static site (HTML/CSS/JS) and can be deployed instantly on **Netlify** or **Vercel**.
+
+### Option 1: Netlify (Recommended)
+1. Push your code to GitHub.
+2. Log in to [Netlify](https://www.netlify.com/).
+3. Click **"Add new site"** > **"Import an existing project"**.
+4. Select your GitHub repository.
+5. **Build Settings**:
+   - **Build command**: (Leave blank)
+   - **Publish directory**: `.` (or leave blank)
+6. Click **Deploy**.
+
+### Option 2: Vercel
+1. Push your code to GitHub.
+2. Log in to [Vercel](https://vercel.com/).
+3. Click **"Add New..."** > **"Project"**.
+4. Import your GitHub repository.
+5. Keep the default settings (Framework Preset: Other).
+6. Click **Deploy**.
+
+Once deployed, the **QR Code** on the instructor screen will automatically point to the live URL, allowing students to join from anywhere without needing to be on the same Wi-Fi.
+
 ## Project Structure
 
 ```

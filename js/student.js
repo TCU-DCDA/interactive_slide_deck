@@ -1,4 +1,45 @@
-// Shared Keys
+// --- PeerJS Client Setup ---
+// Get Room Code from URL
+const urlParams = new URLSearchParams(window.location.search);
+const roomCode = urlParams.get('room');
+let conn;
+
+if (roomCode) {
+    const peer = new Peer(); // Auto-generate ID for student
+    
+    peer.on('open', (id) => {
+        console.log('Student Peer ID:', id);
+        // Connect to Host
+        const hostId = 'tcu-deck-' + roomCode;
+        conn = peer.connect(hostId);
+        
+        conn.on('open', () => {
+            console.log('Connected to Host!');
+            // Optional: Visual indicator
+            document.querySelector('h1').innerText += ' (Connected)';
+        });
+        
+        conn.on('error', (err) => {
+            console.error('Connection Error:', err);
+            alert('Could not connect to instructor. Check the room code.');
+        });
+    });
+} else {
+    // Fallback or manual entry could go here
+    console.warn('No room code provided in URL');
+}
+
+// Helper to send data
+function sendData(type, payload) {
+    if (conn && conn.open) {
+        conn.send({ type, payload });
+    } else {
+        console.warn('Not connected to host, data not sent via PeerJS');
+    }
+}
+
+
+// Shared Keys (Legacy LocalStorage)
 const STORAGE_KEY_THOUGHTS = 'class_thoughts';
 const STORAGE_KEY_QUIZ = 'class_quiz_results';
 
@@ -36,7 +77,10 @@ addThoughtBtn.addEventListener('click', () => {
             id: Date.now()
         };
         
-        // Read - Modify - Write
+        // Send via PeerJS
+        sendData('thought', thoughtData);
+        
+        // Legacy LocalStorage (Keep for local testing)
         const currentThoughts = JSON.parse(localStorage.getItem(STORAGE_KEY_THOUGHTS) || '[]');
         currentThoughts.push(thoughtData);
         localStorage.setItem(STORAGE_KEY_THOUGHTS, JSON.stringify(currentThoughts));
@@ -66,7 +110,10 @@ window.submitAnswer = function(qNum, answer, btn) {
     if (qNum === 4 && answer === 'c') isCorrect = true;
     if (qNum === 5 && answer === 'b') isCorrect = true;
 
-    // Update Global Stats
+    // Send via PeerJS
+    sendData('quiz', isCorrect);
+
+    // Legacy LocalStorage
     const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || '{"correct":0, "incorrect":0}');
     if (isCorrect) {
         stats.correct++;

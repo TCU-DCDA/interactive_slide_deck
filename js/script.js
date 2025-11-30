@@ -21,16 +21,74 @@ document.body.appendChild(statusDiv);
 function updateStatus(msg) {
     const el = document.getElementById('system-status');
     if(el) el.innerText = 'System: ' + msg;
+    const indicator = document.getElementById('status-indicator');
+    if(indicator) indicator.innerText = 'Status: ' + msg;
     console.log('System:', msg);
 }
 
-// --- LocalStorage Syncing ---
+// --- PeerJS Host Setup ---
+// Generate a random 4-character room code
+const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+const peerId = 'tcu-deck-' + roomCode;
+
+const peer = new Peer(peerId);
+
+peer.on('open', (id) => {
+    updateStatus('Host Ready. Room: ' + roomCode);
+    
+    // Generate Link
+    const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+    const studentLink = `${baseUrl}/student.html?room=${roomCode}`;
+    
+    document.getElementById('join-link').innerHTML = `<a href="${studentLink}" target="_blank" style="color:#42affa;">${studentLink}</a>`;
+    
+    // Generate QR Code
+    new QRCode(document.getElementById("qrcode"), {
+        text: studentLink,
+        width: 128,
+        height: 128
+    });
+});
+
+peer.on('connection', (conn) => {
+    conn.on('data', (data) => {
+        console.log('Received data:', data);
+        if (data.type === 'thought') {
+            handleThought(data.payload);
+        } else if (data.type === 'quiz') {
+            handleQuizAnswer(data.payload);
+        }
+    });
+});
+
+peer.on('error', (err) => {
+    console.error(err);
+    updateStatus('Network Error: ' + err.type);
+});
+
+// --- Data Handlers ---
+
+function handleThought(thoughtData) {
+    // Save to local storage for persistence (optional, but good for refresh)
+    const currentThoughts = JSON.parse(localStorage.getItem(STORAGE_KEY_THOUGHTS) || '[]');
+    currentThoughts.push(thoughtData);
+    localStorage.setItem(STORAGE_KEY_THOUGHTS, JSON.stringify(currentThoughts));
+    
+    // Update UI
+    createBubble(thoughtData);
+}
+
+function handleQuizAnswer(isCorrect) {
+    updateGlobalQuizStats(isCorrect);
+}
+
+
+// --- LocalStorage Syncing (Legacy/Backup) ---
 const STORAGE_KEY_THOUGHTS = 'class_thoughts';
 const STORAGE_KEY_QUIZ = 'class_quiz_results';
 
-// Listen for changes from other tabs/windows
+// Listen for changes from other tabs/windows (still useful for local testing)
 window.addEventListener('storage', (e) => {
-    updateStatus('Sync received (' + e.key + ')');
     if (e.key === STORAGE_KEY_THOUGHTS) {
         loadThoughts();
     } else if (e.key === STORAGE_KEY_QUIZ) {
@@ -49,42 +107,7 @@ try {
     console.error("Error loading quiz results", e);
 }
 
-window.checkAnswer = function(btn, questionNum, answer) {
-    updateStatus('Checking answer...');
-    let isCorrect = false;
-    
-    if (questionNum === 1 && answer === 'b') isCorrect = true;
-    if (questionNum === 2 && answer === 'b') isCorrect = true;
-    
-    if (isCorrect) {
-        btn.style.backgroundColor = '#4caf50'; // Green
-        btn.innerText += ' (Correct!)';
-        updateGlobalQuizStats(true);
-    } else {
-        btn.style.backgroundColor = '#f44336'; // Red
-        btn.innerText += ' (Incorrect)';
-        updateGlobalQuizStats(false);
-    }
-    
-    // Disable buttons
-    const parent = btn.parentElement;
-    const buttons = parent.getElementsByClassName('quiz-btn');
-    for (let b of buttons) {
-        b.onclick = null;
-        b.style.cursor = 'default';
-        if (b !== btn) b.style.opacity = '0.5';
-    }
-    
-    // Auto-advance
-    setTimeout(() => {
-        if (questionNum === 1) {
-            document.querySelector('.question:nth-child(1)').style.display = 'none';
-            document.getElementById('q2').style.display = 'block';
-        } else if (questionNum === 2) {
-            Reveal.next(); 
-        }
-    }, 1000);
-};
+// (Instructor view doesn't answer questions anymore, so checkAnswer is removed/unused here)
 
 function updateGlobalQuizStats(isCorrect) {
     const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || '{"correct":0, "incorrect":0}');
@@ -186,58 +209,7 @@ if (addThoughtBtn) {
     });
 }
 
-function loadThoughts() {
-    if(!bubbleContainer) return;
-    bubbleContainer.innerHTML = '';
-    const savedThoughts = JSON.parse(localStorage.getItem(STORAGE_KEY_THOUGHTS) || '[]');
-    savedThoughts.forEach(createBubble);
-}
 
-function createBubble(data) {
-    if(!bubbleContainer) return;
-    
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.innerText = data.text;
-    
-    const size = Math.min(Math.max(data.text.length * 5 + 50, 80), 150);
-    bubble.style.width = `${size}px`;
-    bubble.style.height = `${size}px`;
-    
-    if (data.score > 0) {
-        bubble.style.backgroundColor = '#81c784'; 
-    } else if (data.score < 0) {
-        bubble.style.backgroundColor = '#e57373'; 
-    } else {
-        bubble.style.backgroundColor = '#fff176'; 
-    }
-    
-    const containerWidth = bubbleContainer.clientWidth || 900;
-    const containerHeight = bubbleContainer.clientHeight || 500;
-
-    const maxX = containerWidth - size;
-    const maxY = containerHeight - size;
-    
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
-    
-    bubble.style.left = `${randomX}px`;
-    bubble.style.top = `${randomY}px`;
-    
-    bubble.style.animationDelay = `${Math.random() * 2}s`;
-
-    bubbleContainer.appendChild(bubble);
-}
-
-// Reload bubbles/results when entering the slide
-Reveal.on('slidechanged', event => {
-    if (event.currentSlide.id === 'bubble-slide') {
-        loadThoughts();
-    }
-    if (event.currentSlide.id === 'results-slide') {
-        loadQuizResults();
-    }
-});
 
 function loadThoughts() {
     // Clear current bubbles to avoid duplicates (simple approach)
