@@ -159,6 +159,13 @@ function updateGlobalQuizStats(data) {
         delete stats.incorrect;
     }
 
+    // Ensure all question keys exist (e.g. if upgrading from 5 to 10 questions)
+    for(let i=1; i<=10; i++) {
+        if (!stats['q'+i]) {
+            stats['q'+i] = { correct: 0, incorrect: 0 };
+        }
+    }
+
     // Update Total
     if (isCorrect) {
         stats.total.correct++;
