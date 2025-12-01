@@ -1,10 +1,11 @@
 // --- PeerJS Client Setup ---
 // Get Room Code from URL
 const urlParams = new URLSearchParams(window.location.search);
-const roomCode = urlParams.get('room');
+const roomCode = urlParams.get('room') ? urlParams.get('room').toUpperCase() : null;
 let conn;
 let globalStats = null; // Store class stats received from host
 let myAnswers = {}; // Store student's own answers: { 1: true, 2: false ... }
+let quizAnswers = null; // Store answer key received from host
 let messageQueue = []; // Queue for messages before connection is open
 
 if (roomCode) {
@@ -35,6 +36,9 @@ if (roomCode) {
                 if (!document.getElementById('quiz-done').classList.contains('hidden')) {
                     renderStudentResults();
                 }
+            } else if (data.type === 'quiz_config') {
+                quizAnswers = data.payload;
+                console.log('Quiz configuration received');
             }
         });
         
@@ -42,6 +46,15 @@ if (roomCode) {
             console.error('Connection Error:', err);
             alert('Could not connect to instructor. Check the room code.');
         });
+    });
+
+    peer.on('error', (err) => {
+        console.error('Peer Error:', err);
+        if (err.type === 'peer-unavailable') {
+            alert('Could not find the instructor (Room: ' + roomCode + ').\n\nMake sure the instructor slide is open and the code is correct.');
+        } else {
+            alert('Network Error: ' + err.type);
+        }
     });
 } else {
     // Fallback or manual entry could go here
@@ -69,22 +82,7 @@ const thoughtInput = document.getElementById('studentThoughtInput');
 const addThoughtBtn = document.getElementById('studentAddThoughtBtn');
 
 // Simple Sentiment (Duplicated to avoid dependency issues, or could be shared)
-class SimpleSentiment {
-    constructor() {
-        this.positive = new Set(['good', 'great', 'awesome', 'excellent', 'happy', 'love', 'wonderful', 'best', 'better', 'fun', 'exciting', 'glad', 'nice', 'cool', 'amazing', 'fantastic', 'brilliant', 'joy', 'success', 'win', 'learning', 'fast', 'easy', 'smart']);
-        this.negative = new Set(['bad', 'terrible', 'awful', 'worst', 'hate', 'sad', 'angry', 'boring', 'difficult', 'hard', 'fail', 'lose', 'poor', 'wrong', 'ugly', 'nasty', 'horrible', 'scary', 'fear', 'pain', 'slow', 'confusing', 'stuck']);
-    }
-
-    analyze(text) {
-        const words = text.toLowerCase().match(/\b\w+\b/g) || [];
-        let score = 0;
-        words.forEach(word => {
-            if (this.positive.has(word)) score += 1;
-            if (this.negative.has(word)) score -= 1;
-        });
-        return { score };
-    }
-}
+// Class moved to js/sentiment.js
 const sentiment = new SimpleSentiment();
 
 addThoughtBtn.addEventListener('click', () => {
