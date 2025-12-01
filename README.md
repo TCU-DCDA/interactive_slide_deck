@@ -4,15 +4,22 @@ An interactive presentation tool for classroom engagement, featuring real-time s
 
 ## Features
 
-- **Interactive Presentation**: Built with [Reveal.js](https://revealjs.com/) for smooth, professional slide transitions
-- **Real-time Sentiment Analysis**: Students submit their thoughts and feelings, visualized as color-coded bubbles
-  - 🟢 Positive (green)
-  - 🟡 Neutral (yellow)
-  - 🔴 Negative (red)
-- **Live Quiz Integration**: Test student knowledge with interactive quiz questions
+- **Interactive Presentation**: Built with [Reveal.js](https://revealjs.com/) for smooth, professional slide transitions.
+- **Cross-Device Connectivity**: 
+  - Instructor generates a unique session via **PeerJS**.
+  - Students join by scanning a **QR Code** with their phones.
+  - Works over different networks (e.g., Instructor on Wi-Fi, Student on 5G).
+- **Real-time Sentiment Analysis**: 
+  - Students submit thoughts/feelings.
+  - Visualized instantly as color-coded bubbles (Green=Positive, Red=Negative).
+  - Bubbles automatically sort into "Sentiment Zones" on the screen.
+- **Live Quiz Integration**: 
+  - 10-question skills check (Python & NLP concepts).
+  - **Instructor View**: Shows granular results (Correct/Incorrect count per question).
+  - **Student View**: Shows personal results vs. class average after completion.
 - **Dual Views**:
-  - Instructor view ([index.html](index.html)) - Shows live results and controls
-  - Student view ([student.html](student.html)) - Interface for student input
+  - Instructor view ([index.html](index.html)) - Presentation, QR code, and live analytics.
+  - Student view ([student.html](student.html)) - Mobile-optimized input interface.
 
 ## Getting Started
 
@@ -23,13 +30,15 @@ No installation required! This project runs entirely in the browser using CDN-ho
 ### Usage
 
 1. **Instructor Setup**:
-   - Open `index.html` in your browser
-   - Navigate through slides using arrow keys or on-screen controls
+   - Open `index.html` (or your deployed URL).
+   - A **QR Code** will appear on the title slide once the host is ready.
+   - Navigate slides using arrow keys.
 
 2. **Student Participation**:
-   - Students open `student.html` in their browsers
-   - Students submit sentiment and answer quiz questions
-   - Results appear in real-time on the instructor's view
+   - Scan the QR code with a phone camera.
+   - Enter thoughts/feelings (Slide 2).
+   - Answer the 10 quiz questions as they appear on the main screen.
+   - View comparison results ("You vs Class") at the end.
 
 ### Local Development
 
@@ -82,8 +91,9 @@ interactive_slide_deck/
 ## Technologies Used
 
 - [Reveal.js](https://revealjs.com/) - Presentation framework
-- [Sentiment.js](https://github.com/thisandagain/sentiment) - Sentiment analysis library
-- Vanilla JavaScript - Interactive functionality
+- [PeerJS](https://peerjs.com/) - WebRTC networking for real-time cross-device sync
+- [QRCode.js](https://davidshimjs.github.io/qrcodejs/) - QR code generation
+- Vanilla JavaScript - Custom logic for sentiment analysis and quiz state
 - HTML5/CSS3 - Structure and styling
 
 ## Use Cases
