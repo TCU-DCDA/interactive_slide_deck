@@ -97,8 +97,15 @@ window.addEventListener('storage', (e) => {
 });
 
 // --- Quiz Logic (Independent of Sentiment) ---
-let correctCount = 0;
-let incorrectCount = 0;
+// Default structure: { total: {correct:0, incorrect:0}, q1: {correct:0, incorrect:0}, ... }
+const DEFAULT_QUIZ_STATS = {
+    total: { correct: 0, incorrect: 0 },
+    q1: { correct: 0, incorrect: 0 },
+    q2: { correct: 0, incorrect: 0 },
+    q3: { correct: 0, incorrect: 0 },
+    q4: { correct: 0, incorrect: 0 },
+    q5: { correct: 0, incorrect: 0 }
+};
 
 // Load initial quiz state
 try {
@@ -107,50 +114,96 @@ try {
     console.error("Error loading quiz results", e);
 }
 
-// (Instructor view doesn't answer questions anymore, so checkAnswer is removed/unused here)
-
-function updateGlobalQuizStats(isCorrect) {
-    const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || '{"correct":0, "incorrect":0}');
-    if (isCorrect) {
-        stats.correct++;
+function updateGlobalQuizStats(data) {
+    // Handle both old format (boolean) and new format (object)
+    let isCorrect, questionNum;
+    
+    if (typeof data === 'boolean') {
+        // Legacy fallback (assume generic correct/incorrect if no question provided)
+        isCorrect = data;
+        questionNum = 'unknown';
     } else {
-        stats.incorrect++;
+        isCorrect = data.isCorrect;
+        questionNum = 'q' + data.question;
     }
+
+    const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || JSON.stringify(DEFAULT_QUIZ_STATS));
+    
+    // Ensure structure exists (migration)
+    if (!stats.total) {
+        // Migrate old format to new
+        const oldCorrect = stats.correct || 0;
+        const oldIncorrect = stats.incorrect || 0;
+        stats.total = { correct: oldCorrect, incorrect: oldIncorrect };
+        // Reset per-question stats as we don't know where old votes came from
+        for(let i=1; i<=5; i++) stats['q'+i] = { correct: 0, incorrect: 0 };
+        delete stats.correct;
+        delete stats.incorrect;
+    }
+
+    // Update Total
+    if (isCorrect) {
+        stats.total.correct++;
+    } else {
+        stats.total.incorrect++;
+    }
+
+    // Update Specific Question
+    if (stats[questionNum]) {
+        if (isCorrect) {
+            stats[questionNum].correct++;
+        } else {
+            stats[questionNum].incorrect++;
+        }
+    }
+
     localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify(stats));
     loadQuizResults();
 }
 
 function loadQuizResults() {
-    const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || '{"correct":0, "incorrect":0}');
-    const correctEl = document.getElementById('correct-count');
-    const incorrectEl = document.getElementById('incorrect-count');
+    let stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ));
     
-    if (correctEl) correctEl.innerText = stats.correct;
-    if (incorrectEl) incorrectEl.innerText = stats.incorrect;
+    // Initialize if empty or old format
+    if (!stats || !stats.total) {
+        stats = JSON.parse(JSON.stringify(DEFAULT_QUIZ_STATS));
+    }
+
+    const tbody = document.getElementById('results-body');
+    if (tbody) {
+        tbody.innerHTML = ''; // Clear existing
+        
+        // Generate rows for Q1-Q5
+        for (let i = 1; i <= 5; i++) {
+            const key = 'q' + i;
+            const qStats = stats[key] || { correct: 0, incorrect: 0 };
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>Question ${i}</td>
+                <td style="color: #4caf50;">${qStats.correct}</td>
+                <td style="color: #f44336;">${qStats.incorrect}</td>
+            `;
+            tbody.appendChild(row);
+        }
+    }
+
+    // Update Totals
+    const totalCorrectEl = document.getElementById('total-correct');
+    const totalIncorrectEl = document.getElementById('total-incorrect');
+    
+    if (totalCorrectEl) totalCorrectEl.innerText = stats.total.correct;
+    if (totalIncorrectEl) totalIncorrectEl.innerText = stats.total.incorrect;
 }
 
 window.resetQuiz = function() {
-    localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify({correct: 0, incorrect: 0}));
+    localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify(DEFAULT_QUIZ_STATS));
     localStorage.setItem(STORAGE_KEY_THOUGHTS, JSON.stringify([])); 
     loadQuizResults();
     loadThoughts();
     
-    // Reset UI questions
-    document.querySelector('.question:nth-child(1)').style.display = 'block';
-    document.getElementById('q2').style.display = 'none';
-    
-    // Reset buttons visual state (reload page is easiest, but let's try manual)
-    const buttons = document.getElementsByClassName('quiz-btn');
-    for(let b of buttons) {
-        b.style.backgroundColor = '#333';
-        b.style.opacity = '1';
-        b.style.cursor = 'pointer';
-        // Remove the (Correct/Incorrect) text if present
-        b.innerText = b.innerText.replace(' (Correct!)', '').replace(' (Incorrect)', '');
-        // Re-attach handlers is tricky without reloading, so we advise reload
-    }
-    alert("Quiz Reset! Please refresh the page to reset the buttons.");
-    Reveal.slide(3); 
+    alert("Quiz Reset!");
+    // No need to reset UI buttons here as this is the instructor view
 };
 
 

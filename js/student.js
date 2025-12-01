@@ -111,7 +111,7 @@ window.submitAnswer = function(qNum, answer, btn) {
     if (qNum === 5 && answer === 'b') isCorrect = true;
 
     // Send via PeerJS
-    sendData('quiz', isCorrect);
+    sendData('quiz', { question: qNum, isCorrect: isCorrect });
 
     // Legacy LocalStorage
     const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || '{"correct":0, "incorrect":0}');
