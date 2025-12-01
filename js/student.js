@@ -5,6 +5,7 @@ const roomCode = urlParams.get('room');
 let conn;
 let globalStats = null; // Store class stats received from host
 let myAnswers = {}; // Store student's own answers: { 1: true, 2: false ... }
+let messageQueue = []; // Queue for messages before connection is open
 
 if (roomCode) {
     const peer = new Peer(); // Auto-generate ID for student
@@ -19,6 +20,12 @@ if (roomCode) {
             console.log('Connected to Host!');
             // Optional: Visual indicator
             document.querySelector('h1').innerText += ' (Connected)';
+            
+            // Flush queue
+            while (messageQueue.length > 0) {
+                const msg = messageQueue.shift();
+                conn.send(msg);
+            }
         });
         
         conn.on('data', (data) => {
@@ -43,10 +50,12 @@ if (roomCode) {
 
 // Helper to send data
 function sendData(type, payload) {
+    const msg = { type, payload };
     if (conn && conn.open) {
-        conn.send({ type, payload });
+        conn.send(msg);
     } else {
-        console.warn('Not connected to host, data not sent via PeerJS');
+        console.log('Connection not ready, queuing message...');
+        messageQueue.push(msg);
     }
 }
 

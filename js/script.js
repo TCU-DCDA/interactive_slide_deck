@@ -142,7 +142,14 @@ function updateGlobalQuizStats(data) {
         questionNum = 'unknown';
     } else {
         isCorrect = data.isCorrect;
-        questionNum = 'q' + data.question;
+        // Robustly parse question number
+        const qInt = parseInt(data.question);
+        if (!isNaN(qInt) && qInt >= 1 && qInt <= 10) {
+            questionNum = 'q' + qInt;
+        } else {
+            console.warn('Invalid question number:', data.question);
+            questionNum = 'unknown';
+        }
     }
 
     const stats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || JSON.stringify(DEFAULT_QUIZ_STATS));
@@ -174,12 +181,15 @@ function updateGlobalQuizStats(data) {
     }
 
     // Update Specific Question
-    if (stats[questionNum]) {
+    if (questionNum !== 'unknown' && stats[questionNum]) {
         if (isCorrect) {
             stats[questionNum].correct++;
         } else {
             stats[questionNum].incorrect++;
         }
+    } else if (questionNum !== 'unknown') {
+        // Fallback: Create if missing (should be handled by loop, but safety first)
+        stats[questionNum] = { correct: isCorrect ? 1 : 0, incorrect: isCorrect ? 0 : 1 };
     }
 
     localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify(stats));
