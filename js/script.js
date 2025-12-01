@@ -198,9 +198,12 @@ function loadQuizResults() {
         stats = JSON.parse(JSON.stringify(DEFAULT_QUIZ_STATS));
     }
 
-    const tbody = document.getElementById('results-body');
-    if (tbody) {
-        tbody.innerHTML = ''; // Clear existing
+    const tbodyLeft = document.getElementById('results-body-left');
+    const tbodyRight = document.getElementById('results-body-right');
+    
+    if (tbodyLeft && tbodyRight) {
+        tbodyLeft.innerHTML = ''; 
+        tbodyRight.innerHTML = '';
         
         // Generate rows for Q1-Q10
         for (let i = 1; i <= 10; i++) {
@@ -209,11 +212,16 @@ function loadQuizResults() {
             
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>Question ${i}</td>
+                <td>Q${i}</td>
                 <td style="color: #4caf50;">${qStats.correct}</td>
                 <td style="color: #f44336;">${qStats.incorrect}</td>
             `;
-            tbody.appendChild(row);
+            
+            if (i <= 5) {
+                tbodyLeft.appendChild(row);
+            } else {
+                tbodyRight.appendChild(row);
+            }
         }
     }
 
