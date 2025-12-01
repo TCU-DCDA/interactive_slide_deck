@@ -69,7 +69,7 @@
         <p style="font-style: italic; color: #666; margin-bottom: 20px;">Look at the main screen for the question, then select your answer below.</p>
         
         <div id="q1">
-            <p><strong>Question 1 of 5</strong></p>
+            <p><strong>Question 1 of 10</strong></p>
             <div class="quiz-options">
                 <button onclick="submitAnswer(1, 'a', this)">Option A</button>
                 <button onclick="submitAnswer(1, 'b', this)">Option B</button>
@@ -78,7 +78,7 @@
         </div>
 
         <div id="q2" class="hidden">
-            <p><strong>Question 2 of 5</strong></p>
+            <p><strong>Question 2 of 10</strong></p>
             <div class="quiz-options">
                 <button onclick="submitAnswer(2, 'a', this)">Option A</button>
                 <button onclick="submitAnswer(2, 'b', this)">Option B</button>
@@ -87,7 +87,7 @@
         </div>
 
         <div id="q3" class="hidden">
-            <p><strong>Question 3 of 5</strong></p>
+            <p><strong>Question 3 of 10</strong></p>
             <div class="quiz-options">
                 <button onclick="submitAnswer(3, 'a', this)">Option A</button>
                 <button onclick="submitAnswer(3, 'b', this)">Option B</button>
@@ -96,7 +96,7 @@
         </div>
 
         <div id="q4" class="hidden">
-            <p><strong>Question 4 of 5</strong></p>
+            <p><strong>Question 4 of 10</strong></p>
             <div class="quiz-options">
                 <button onclick="submitAnswer(4, 'a', this)">Option A</button>
                 <button onclick="submitAnswer(4, 'b', this)">Option B</button>
@@ -105,17 +105,78 @@
         </div>
 
         <div id="q5" class="hidden">
-            <p><strong>Question 5 of 5</strong></p>
+            <p><strong>Question 5 of 10</strong></p>
             <div class="quiz-options">
                 <button onclick="submitAnswer(5, 'a', this)">Option A</button>
                 <button onclick="submitAnswer(5, 'b', this)">Option B</button>
                 <button onclick="submitAnswer(5, 'c', this)">Option C</button>
             </div>
         </div>
+
+        <div id="q6" class="hidden">
+            <p><strong>Question 6 of 10</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(6, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(6, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(6, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q7" class="hidden">
+            <p><strong>Question 7 of 10</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(7, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(7, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(7, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q8" class="hidden">
+            <p><strong>Question 8 of 10</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(8, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(8, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(8, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q9" class="hidden">
+            <p><strong>Question 9 of 10</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(9, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(9, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(9, 'c', this)">Option C</button>
+            </div>
+        </div>
+
+        <div id="q10" class="hidden">
+            <p><strong>Question 10 of 10</strong></p>
+            <div class="quiz-options">
+                <button onclick="submitAnswer(10, 'a', this)">Option A</button>
+                <button onclick="submitAnswer(10, 'b', this)">Option B</button>
+                <button onclick="submitAnswer(10, 'c', this)">Option C</button>
+            </div>
+        </div>
         
         <div id="quiz-done" class="hidden">
             <h3>Thanks for your answers!</h3>
-            <p>Look at the main screen for results.</p>
+            <p>Here is how you compare to the class:</p>
+            
+            <div id="student-results-container" style="margin-top: 20px;">
+                <table style="width: 100%; font-size: 0.9em; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #ddd;">
+                            <th style="text-align: left; padding: 8px;">Q</th>
+                            <th style="text-align: center; padding: 8px;">You</th>
+                            <th style="text-align: center; padding: 8px;">Class</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-results-body">
+                        <!-- Rows generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
             <button onclick="location.reload()" style="margin-top: 20px; background-color: #777;">Take Quiz Again</button>
         </div>
     </div>

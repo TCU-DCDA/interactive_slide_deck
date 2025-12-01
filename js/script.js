@@ -32,6 +32,7 @@ const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
 const peerId = 'tcu-deck-' + roomCode;
 
 const peer = new Peer(peerId);
+let connections = []; // Store all connected students
 
 peer.on('open', (id) => {
     updateStatus('Host Ready. Room: ' + roomCode);
@@ -51,6 +52,14 @@ peer.on('open', (id) => {
 });
 
 peer.on('connection', (conn) => {
+    connections.push(conn);
+    
+    // Send current stats immediately upon connection
+    const currentStats = JSON.parse(localStorage.getItem(STORAGE_KEY_QUIZ) || JSON.stringify(DEFAULT_QUIZ_STATS));
+    conn.on('open', () => {
+        conn.send({ type: 'stats_update', payload: currentStats });
+    });
+
     conn.on('data', (data) => {
         console.log('Received data:', data);
         if (data.type === 'thought') {
@@ -58,6 +67,10 @@ peer.on('connection', (conn) => {
         } else if (data.type === 'quiz') {
             handleQuizAnswer(data.payload);
         }
+    });
+    
+    conn.on('close', () => {
+        connections = connections.filter(c => c !== conn);
     });
 });
 
@@ -104,7 +117,12 @@ const DEFAULT_QUIZ_STATS = {
     q2: { correct: 0, incorrect: 0 },
     q3: { correct: 0, incorrect: 0 },
     q4: { correct: 0, incorrect: 0 },
-    q5: { correct: 0, incorrect: 0 }
+    q5: { correct: 0, incorrect: 0 },
+    q6: { correct: 0, incorrect: 0 },
+    q7: { correct: 0, incorrect: 0 },
+    q8: { correct: 0, incorrect: 0 },
+    q9: { correct: 0, incorrect: 0 },
+    q10: { correct: 0, incorrect: 0 }
 };
 
 // Load initial quiz state
@@ -136,7 +154,7 @@ function updateGlobalQuizStats(data) {
         const oldIncorrect = stats.incorrect || 0;
         stats.total = { correct: oldCorrect, incorrect: oldIncorrect };
         // Reset per-question stats as we don't know where old votes came from
-        for(let i=1; i<=5; i++) stats['q'+i] = { correct: 0, incorrect: 0 };
+        for(let i=1; i<=10; i++) stats['q'+i] = { correct: 0, incorrect: 0 };
         delete stats.correct;
         delete stats.incorrect;
     }
@@ -159,6 +177,17 @@ function updateGlobalQuizStats(data) {
 
     localStorage.setItem(STORAGE_KEY_QUIZ, JSON.stringify(stats));
     loadQuizResults();
+    
+    // Broadcast new stats to all students
+    broadcastStats(stats);
+}
+
+function broadcastStats(stats) {
+    connections.forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'stats_update', payload: stats });
+        }
+    });
 }
 
 function loadQuizResults() {
@@ -173,8 +202,8 @@ function loadQuizResults() {
     if (tbody) {
         tbody.innerHTML = ''; // Clear existing
         
-        // Generate rows for Q1-Q5
-        for (let i = 1; i <= 5; i++) {
+        // Generate rows for Q1-Q10
+        for (let i = 1; i <= 10; i++) {
             const key = 'q' + i;
             const qStats = stats[key] || { correct: 0, incorrect: 0 };
             

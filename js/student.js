@@ -3,6 +3,8 @@
 const urlParams = new URLSearchParams(window.location.search);
 const roomCode = urlParams.get('room');
 let conn;
+let globalStats = null; // Store class stats received from host
+let myAnswers = {}; // Store student's own answers: { 1: true, 2: false ... }
 
 if (roomCode) {
     const peer = new Peer(); // Auto-generate ID for student
@@ -17,6 +19,16 @@ if (roomCode) {
             console.log('Connected to Host!');
             // Optional: Visual indicator
             document.querySelector('h1').innerText += ' (Connected)';
+        });
+        
+        conn.on('data', (data) => {
+            if (data.type === 'stats_update') {
+                globalStats = data.payload;
+                // If the student is already on the results screen, update it live
+                if (!document.getElementById('quiz-done').classList.contains('hidden')) {
+                    renderStudentResults();
+                }
+            }
         });
         
         conn.on('error', (err) => {
@@ -109,6 +121,14 @@ window.submitAnswer = function(qNum, answer, btn) {
     if (qNum === 3 && answer === 'a') isCorrect = true;
     if (qNum === 4 && answer === 'c') isCorrect = true;
     if (qNum === 5 && answer === 'b') isCorrect = true;
+    if (qNum === 6 && answer === 'c') isCorrect = true;
+    if (qNum === 7 && answer === 'a') isCorrect = true;
+    if (qNum === 8 && answer === 'b') isCorrect = true;
+    if (qNum === 9 && answer === 'c') isCorrect = true;
+    if (qNum === 10 && answer === 'b') isCorrect = true;
+
+    // Store local result
+    myAnswers[qNum] = isCorrect;
 
     // Send via PeerJS
     sendData('quiz', { question: qNum, isCorrect: isCorrect });
@@ -135,6 +155,44 @@ window.submitAnswer = function(qNum, answer, btn) {
             nextEl.classList.remove('hidden');
         } else {
             document.getElementById('quiz-done').classList.remove('hidden');
+            renderStudentResults();
         }
     }, 500);
 };
+
+function renderStudentResults() {
+    const tbody = document.getElementById('student-results-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    for (let i = 1; i <= 10; i++) {
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid #eee';
+        
+        // My Result
+        const myResult = myAnswers[i];
+        let myIcon = '-';
+        if (myResult === true) myIcon = '<span style="color:green">✔</span>';
+        if (myResult === false) myIcon = '<span style="color:red">✘</span>';
+
+        // Class Result
+        let classStat = '-';
+        if (globalStats && globalStats['q' + i]) {
+            const q = globalStats['q' + i];
+            const total = q.correct + q.incorrect;
+            if (total > 0) {
+                const percent = Math.round((q.correct / total) * 100);
+                classStat = `${percent}% Correct`;
+            } else {
+                classStat = 'No Data';
+            }
+        }
+
+        row.innerHTML = `
+            <td style="padding: 8px;">Q${i}</td>
+            <td style="text-align: center; padding: 8px;">${myIcon}</td>
+            <td style="text-align: center; padding: 8px; font-size: 0.8em; color: #666;">${classStat}</td>
+        `;
+        tbody.appendChild(row);
+    }
+}
