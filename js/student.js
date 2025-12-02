@@ -31,7 +31,13 @@ if (roomCode) {
     updateStatus(`Connecting to Room: ${roomCode}...`);
     
     const peer = new Peer({
-        debug: 2 // Print errors and warnings
+        debug: 2,
+        config: {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
     }); 
     
     peer.on('open', (id) => {

@@ -37,7 +37,13 @@ if (!roomCode) {
 const peerId = 'tcu-deck-' + roomCode;
 
 const peer = new Peer(peerId, {
-    debug: 2
+    debug: 2,
+    config: {
+        'iceServers': [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+    }
 });
 let connections = []; // Store all connected students
 
