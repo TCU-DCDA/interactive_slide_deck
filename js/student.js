@@ -8,19 +8,47 @@ let myAnswers = {}; // Store student's own answers: { 1: true, 2: false ... }
 let quizAnswers = null; // Store answer key received from host
 let messageQueue = []; // Queue for messages before connection is open
 
+// UI Status Helper
+const statusEl = document.getElementById('connection-status');
+function updateStatus(msg, type = 'info') {
+    console.log(`[Status] ${msg}`);
+    if (statusEl) {
+        statusEl.innerText = msg;
+        if (type === 'error') {
+            statusEl.style.backgroundColor = '#ffcdd2';
+            statusEl.style.color = '#c62828';
+        } else if (type === 'success') {
+            statusEl.style.backgroundColor = '#c8e6c9';
+            statusEl.style.color = '#2e7d32';
+        } else {
+            statusEl.style.backgroundColor = '#e0e0e0';
+            statusEl.style.color = '#666';
+        }
+    }
+}
+
 if (roomCode) {
-    const peer = new Peer(); // Auto-generate ID for student
+    updateStatus(`Connecting to Room: ${roomCode}...`);
+    
+    const peer = new Peer({
+        debug: 2 // Print errors and warnings
+    }); 
     
     peer.on('open', (id) => {
         console.log('Student Peer ID:', id);
+        updateStatus('Peer created. Connecting to host...');
+        
         // Connect to Host
         const hostId = 'tcu-deck-' + roomCode;
-        conn = peer.connect(hostId);
+        conn = peer.connect(hostId, {
+            reliable: true
+        });
         
         conn.on('open', () => {
             console.log('Connected to Host!');
+            updateStatus('Connected to Instructor', 'success');
             // Optional: Visual indicator
-            document.querySelector('h1').innerText += ' (Connected)';
+            document.querySelector('h1').innerText = 'Student Response (Connected)';
             
             // Flush queue
             while (messageQueue.length > 0) {
@@ -42,22 +70,27 @@ if (roomCode) {
             }
         });
         
+        conn.on('close', () => {
+            updateStatus('Disconnected from host', 'error');
+            document.querySelector('h1').innerText = 'Student Response (Disconnected)';
+        });
+
         conn.on('error', (err) => {
             console.error('Connection Error:', err);
-            alert('Could not connect to instructor. Check the room code.');
+            updateStatus('Connection Error: ' + err, 'error');
         });
     });
 
     peer.on('error', (err) => {
         console.error('Peer Error:', err);
         if (err.type === 'peer-unavailable') {
-            alert('Could not find the instructor (Room: ' + roomCode + ').\n\nMake sure the instructor slide is open and the code is correct.');
+            updateStatus(`Host not found (Room: ${roomCode}). Is the slide deck open?`, 'error');
         } else {
-            alert('Network Error: ' + err.type);
+            updateStatus('Network Error: ' + err.type, 'error');
         }
     });
 } else {
-    // Fallback or manual entry could go here
+    updateStatus('No room code provided.', 'error');
     console.warn('No room code provided in URL');
 }
 

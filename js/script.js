@@ -27,11 +27,18 @@ function updateStatus(msg) {
 }
 
 // --- PeerJS Host Setup ---
-// Generate a random 4-character room code
-const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+// Generate or retrieve room code (persist on refresh)
+let roomCode = sessionStorage.getItem('host_room_code');
+if (!roomCode) {
+    roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+    sessionStorage.setItem('host_room_code', roomCode);
+}
+
 const peerId = 'tcu-deck-' + roomCode;
 
-const peer = new Peer(peerId);
+const peer = new Peer(peerId, {
+    debug: 2
+});
 let connections = []; // Store all connected students
 
 // Quiz Answer Key (Source of Truth)
