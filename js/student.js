@@ -121,18 +121,15 @@ window.submitAnswer = function(qNum, answer, btn) {
     btn.style.opacity = '1';
     btn.classList.add('selected');
 
-    // Check correctness (Client-side check for simplicity)
+    // Check correctness (Dynamic check using key from host)
     let isCorrect = false;
-    if (qNum === 1 && answer === 'b') isCorrect = true;
-    if (qNum === 2 && answer === 'b') isCorrect = true;
-    if (qNum === 3 && answer === 'a') isCorrect = true;
-    if (qNum === 4 && answer === 'c') isCorrect = true;
-    if (qNum === 5 && answer === 'b') isCorrect = true;
-    if (qNum === 6 && answer === 'c') isCorrect = true;
-    if (qNum === 7 && answer === 'a') isCorrect = true;
-    if (qNum === 8 && answer === 'b') isCorrect = true;
-    if (qNum === 9 && answer === 'c') isCorrect = true;
-    if (qNum === 10 && answer === 'b') isCorrect = true;
+    
+    if (quizAnswers && quizAnswers[qNum]) {
+        isCorrect = (answer === quizAnswers[qNum]);
+    } else {
+        console.warn('Quiz answer key not loaded yet. Defaulting to false.');
+        // Fallback or retry logic could go here
+    }
 
     // Store local result
     myAnswers[qNum] = isCorrect;
