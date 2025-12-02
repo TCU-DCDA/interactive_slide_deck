@@ -47,7 +47,7 @@ if (roomCode) {
         // Connect to Host
         const hostId = 'tcu-deck-' + roomCode;
         conn = peer.connect(hostId, {
-            reliable: true
+            serialization: 'json'
         });
         
         conn.on('open', () => {
